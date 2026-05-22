@@ -19,9 +19,9 @@
         .right  { width: 1933px; height: 1000px; transform: rotateY( -90deg) translateZ(-1450px); background-image: url('wall2.jpeg'); }
         .left   { width: 1933px; height: 1000px; transform: rotateY(  90deg) translateZ(-1450px); background-image: url('wall4.jpeg'); }
         
-        /* ПОТОЛОК И ПОЛ (2900px х 1933px). Поворачиваем по оси X и смещаем по высоте ровно на половину стены (1000 / 2 = 500px) */
-        .top    { width: 2900px; height: 1933px; transform: rotateX( -90deg) translateZ(-500px); background-image: url('ceiling.jpeg'); }
-        .bottom { width: 2900px; height: 1933px; transform: rotateX(  90deg) translateZ(-500px); background-image: url('floor.jpeg'); }
+               /* Разворачиваем потолок и пол вдоль длинных стен, закрывая черные зазоры */
+        .top    { width: 1933px; height: 2900px; transform: rotateX( -90deg) rotateZ( 90deg) translateZ(-500px); background-image: url('ceiling.jpeg'); }
+        .bottom { width: 1933px; height: 2900px; transform: rotateX(  90deg) rotateZ(-90deg) translateZ(-500px); background-image: url('floor.jpeg'); }
 
         .hint { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); color: white; background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 20px; z-index: 10; pointer-events: none; }
     </style>
