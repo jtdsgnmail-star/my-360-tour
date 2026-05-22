@@ -60,7 +60,7 @@
 
             const controls = new THREE.OrbitControls(camera, renderer.domElement);
             const loader = new THREE.TextureLoader();
-            const order = ['Wall2', 'Wall4', 'Ceiling', 'Floor', 'Wall1', 'Wall3'];
+            const order = ['wall2', 'wall4', 'ceiling', 'floor', 'wall1', 'wall3'];
             
             // Загружаем картинки кубической панорамы
             const materialArray = order.map(name => {
