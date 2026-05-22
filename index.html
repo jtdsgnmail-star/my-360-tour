@@ -6,11 +6,13 @@
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; }
         #canvas-container { width: 100%; height: 100%; cursor: grab; }
-        .hint { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); color: white; background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 20px; z-index: 10; font-family: sans-serif; }
+        .hint { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); color: white; background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 20px; z-index: 10; font-family: sans-serif; pointer-events: none; }
         #error-log { position: absolute; bottom: 20px; left: 20px; color: #ff4d4d; background: rgba(0,0,0,0.8); padding: 15px; border-radius: 5px; font-family: monospace; max-width: 80%; display: none; z-index: 20; }
     </style>
-   <script src="https://unigine.com"></script>
-<script src="https://unigine.com"></script>
+    <!-- Подключаем основную библиотеку Three.js -->
+    <script src="https://cloudflare.com"></script>
+    <!-- Подключаем модуль управления камерой OrbitControls -->
+    <script src="https://jsdelivr.net"></script>
 </head>
 <body>
     <div class="hint">Зажмите мышь и вращайте для обзора 360°</div>
@@ -33,9 +35,11 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         container.appendChild(renderer.domElement);
 
+        // Теперь OrbitControls работает, так как библиотека подключена в head
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.rotateSpeed = -0.4; 
         controls.enableZoom = true;
+        controls.enableDamping = true; // Делает вращение более плавным
 
         const loader = new THREE.TextureLoader();
         // Порядок текстур важен для кубической панорамы Three.js
@@ -58,7 +62,8 @@
         scene.add(skybox);
 
         function animate() { 
-            requestAnimationFrame(animate); 
+            requestAnimationFrame(animate);
+            controls.update(); // Нужно для плавного вращения (damping)
             renderer.render(scene, camera); 
         }
         animate();
