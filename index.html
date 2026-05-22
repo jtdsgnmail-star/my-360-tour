@@ -9,15 +9,16 @@
         .hint { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); color: white; background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 20px; z-index: 10; font-family: sans-serif; pointer-events: none; }
         #error-log { position: absolute; bottom: 20px; left: 20px; color: #ff4d4d; background: rgba(0,0,0,0.8); padding: 15px; border-radius: 5px; font-family: monospace; max-width: 80%; display: none; z-index: 20; }
     </style>
-    <!-- Подключаем основную библиотеку Three.js -->
-    <script src="https://cloudflare.com"></script>
-    <!-- Подключаем модуль управления камерой OrbitControls -->
-    <script src="https://jsdelivr.net"></script>
 </head>
 <body>
     <div class="hint">Зажмите мышь и вращайте для обзора 360°</div>
     <div id="error-log"></div>
     <div id="canvas-container"></div>
+
+    <!-- НАДЕЖНОЕ ПОДКЛЮЧЕНИЕ БИБЛИОТЕК ПЕРЕД СКРИПТОМ ТУРА -->
+    <script src="https://cloudflare.com"></script>
+    <script src="https://jsdelivr.net"></script>
+
     <script>
         const container = document.getElementById('canvas-container');
         const errorLog = document.getElementById('error-log');
@@ -35,18 +36,18 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         container.appendChild(renderer.domElement);
 
-        // Теперь OrbitControls работает, так как библиотека подключена в head
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.rotateSpeed = -0.4; 
         controls.enableZoom = true;
-        controls.enableDamping = true; // Делает вращение более плавным
+        controls.enableDamping = true; 
 
         const loader = new THREE.TextureLoader();
-        // Порядок текстур важен для кубической панорамы Three.js
+        // Порядок текстур для кубической панорамы Three.js
         const order = ['wall2', 'wall4', 'ceiling', 'floor', 'wall1', 'wall3'];
         
         const materialArray = order.map(name => {
-            const fileName = name + '.jpeg'; // Если у вас файлы .png, замените тут на '.png'
+            // Исправлено расширение на .jpeg согласно вашему репозиторию!
+            const fileName = name + '.jpeg'; 
             return new THREE.MeshBasicMaterial({ 
                 map: loader.load(
                     fileName, 
@@ -63,7 +64,7 @@
 
         function animate() { 
             requestAnimationFrame(animate);
-            controls.update(); // Нужно для плавного вращения (damping)
+            controls.update(); 
             renderer.render(scene, camera); 
         }
         animate();
