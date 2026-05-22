@@ -46,7 +46,7 @@
         const order = ['wall2', 'wall4', 'ceiling', 'floor', 'wall1', 'wall3'];
         
         const materialArray = order.map(name => {
-            const fileName = name + '.jpg'; // Если у вас файлы .png, замените тут на '.png'
+            const fileName = name + '.jpeg'; // Если у вас файлы .png, замените тут на '.png'
             return new THREE.MeshBasicMaterial({ 
                 map: loader.load(
                     fileName, 
