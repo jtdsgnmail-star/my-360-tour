@@ -10,13 +10,14 @@
         .face { position: absolute; width: 1000px; height: 1000px; background-size: cover; background-position: center; backface-visibility: hidden; }
         
         /* Исправленные пути к файлам: без двойного расширения jpeg */
-        .front  { transform: rotateY(  0deg) translateZ(-500px); background-image: url('Wall1.jpeg'); }
-        .right  { transform: rotateY( -90deg) translateZ(-500px); background-image: url('Wall2.jpeg'); }
-        .back   { transform: rotateY(180deg) translateZ(-500px); background-image: url('Wall3.jpeg'); }
-        .left   { transform: rotateY(  90deg) translateZ(-500px); background-image: url('Wall4.jpeg'); }
-        .top    { transform: rotateX( -90deg) translateZ(-500px); background-image: url('Ceiling.jpeg'); }
-        .bottom { transform: rotateX(  90deg) translateZ(-500px); background-image: url('Floor.jpeg'); }
-
+                /* Полное соответствие именам файлов в вашем репозитории */
+        .front  { transform: rotateY(  0deg) translateZ(-500px); background-image: url('wall1.jpg'); }
+        .right  { transform: rotateY( -90deg) translateZ(-500px); background-image: url('wall2.jpg'); }
+        .back   { transform: rotateY(180deg) translateZ(-500px); background-image: url('wall3.jpg'); }
+        .left   { transform: rotateY(  90deg) translateZ(-500px); background-image: url('wall4.jpg'); }
+        .top    { transform: rotateX( -90deg) translateZ(-500px); background-image: url('ceiling.jpeg'); }
+        .bottom { transform: rotateX(  90deg) translateZ(-500px); background-image: url('floor.jpeg'); }
+        
         .hint { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); color: white; background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 20px; z-index: 10; pointer-events: none; }
     </style>
 </head>
