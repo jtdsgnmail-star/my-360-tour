@@ -6,11 +6,10 @@
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; font-family: sans-serif; }
         #view-container { width: 100%; height: 100%; perspective: 600px; display: flex; align-items: center; justify-content: center; cursor: grab; }
-        #cube { width: 1000px; height: 1000px; position: relative; transform-style: preserve-3d; transform: translateZ(300px) rotateX(0deg) rotateY(0deg); }
+        #cube { width: 1000px; height: 1000px; position: relative; transform-style: preserve-3d; transform: translateZ(450px) rotateX(0deg) rotateY(0deg); }
         .face { position: absolute; width: 1000px; height: 1000px; background-size: cover; background-position: center; backface-visibility: hidden; }
         
-        /* Позиционирование стен в пространстве 3D куба */
-               /* Правильные пути к файлам без двойного расширения */
+        /* Исправленные пути к файлам: без двойного расширения jpeg */
         .front  { transform: rotateY(  0deg) translateZ(-500px); background-image: url('Wall1.jpeg'); }
         .right  { transform: rotateY( -90deg) translateZ(-500px); background-image: url('Wall2.jpeg'); }
         .back   { transform: rotateY(180deg) translateZ(-500px); background-image: url('Wall3.jpeg'); }
@@ -54,11 +53,8 @@
             const deltaX = e.clientX - startX;
             const deltaY = e.clientY - startY;
             
-            // Вращение панорамы по осям
             rotateY += deltaX * 0.2;
             rotateX -= deltaY * 0.2;
-            
-            // Ограничение обзора вверх/вниз, чтобы не крутилось наизнанку
             rotateX = Math.max(-85, Math.min(85, rotateX));
             
             cube.style.transform = `translateZ(450px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
@@ -72,7 +68,6 @@
             container.style.cursor = 'grab';
         });
 
-        // Поддержка мобильных экранов (тач)
         container.addEventListener('touchstart', (e) => {
             isDragging = true;
             startX = e.touches[0].clientX;
@@ -92,66 +87,6 @@
         });
 
         window.addEventListener('touchend', () => isDragging = false);
-    </script>
-</body>
-</html>
-
-            // Запуск рендеринга
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ antialias: true });
-            container.appendChild(renderer.domElement);
-
-            const controls = new THREE.OrbitControls(camera, renderer.domElement);
-            const loader = new THREE.TextureLoader();
-            const order = ['wall2', 'wall4', 'ceiling', 'floor', 'wall1', 'wall3'];
-            
-            // Загружаем картинки кубической панорамы
-            const materialArray = order.map(name => {
-                const fileName = name + '.jpeg'; 
-                return new THREE.MeshBasicMaterial({ 
-                    map: loader.load(fileName, undefined, undefined, () => showImgError(fileName)), 
-                    side: THREE.BackSide 
-                });
-            });
-
-            // Рендерим панораму через фоновые изображения блоков, если WebGL недоступен из-за блокировок
-            const containerDiv = renderer.domElement;
-            containerDiv.style.display = 'grid';
-            containerDiv.style.gridTemplateColumns = 'repeat(3, 1fr)';
-            containerDiv.style.gap = '5px';
-            containerDiv.style.padding = '20px';
-            containerDiv.style.boxSizing = 'border-box';
-            
-            // Очищаем и выводим панораму напрямую в интерфейс
-            containerDiv.innerHTML = '';
-            order.forEach(name => {
-                const box = document.createElement('div');
-                box.style.width = '100%';
-                box.style.height = '200px';
-                box.style.backgroundImage = `url(${name}.jpeg)`;
-                box.style.backgroundSize = 'cover';
-                box.style.backgroundPosition = 'center';
-                box.style.borderRadius = '8px';
-                box.style.border = '2px solid #333';
-                containerDiv.appendChild(box);
-            });
-            
-            // Показываем плашку, что картинки на месте
-            const successHint = document.createElement('div');
-            successHint.style.position = 'absolute';
-            successHint.style.bottom = '20px';
-            successHint.style.right = '20px';
-            successHint.style.color = '#4caf50';
-            successHint.style.background = 'rgba(0,0,0,0.8)';
-            successHint.style.padding = '10px';
-            successHint.style.fontFamily = 'sans-serif';
-            successHint.innerHTML = '✔ Движок переведен в автономный режим';
-            document.body.appendChild(successHint);
-        }
-
-        // Мгновенный старт без ожидания серверов сети
-        setTimeout(initAutonomousEngine, 100);
     </script>
 </body>
 </html>
