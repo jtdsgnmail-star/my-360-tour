@@ -15,9 +15,65 @@
     <div id="error-log"></div>
     <div id="canvas-container"></div>
 
-    <!-- ВСТРОЕННЫЙ АВТОНОМНЫЙ ИНЖЕКТОР БИБЛИОТЕК -->
+    <!-- Загружаем библиотеки прямо из вашего репозитория, без интернета -->
+    <script src="three.min.js"></script>
+    <script src="OrbitControls.js"></script>
+
     <script>
-        !function(){const e=document.createElement("script");e.src="https://github.io",e.onload=function(){const e=document.createElement("script");e.src="https://github.io",e.onload=function(){const e=document.getElementById("canvas-container"),t=document.getElementById("error-log");function o(e){t.style.display="block",t.innerHTML+=`❌ Ошибка загрузки файла: <b>${e}</b><br>Проверьте, что он загружен на GitHub и его имя написано точь-в-точь так же.<br>`}const n=new THREE.Scene,a=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,.1,1e3);a.position.set(0,0,.01);const r=new THREE.WebGLRenderer({antialias:1});r.setSize(window.innerWidth,window.innerHeight),e.appendChild(r.domElement);const c=new THREE.OrbitControls(a,r.domElement);c.rotateSpeed=-.4,c.enableZoom=1,c.enableDamping=1;const i=new THREE.TextureLoader,d=["wall2","wall4","ceiling","floor","wall1","wall3"].map(e=>{const t=e+".jpeg";return new THREE.MeshBasicMaterial({map:i.load(t,void 0,void 0,()=>o(t)),side:THREE.BackSide})}),s=new THREE.Mesh(new THREE.BoxGeometry(10,10,10),d);n.add(s),function e(){requestAnimationFrame(e),c.update(),r.render(n,a)}(),window.addEventListener("resize",()=>{a.aspect=window.innerWidth/window.innerHeight,a.updateProjectionMatrix(),r.setSize(window.innerWidth,window.innerHeight)})},document.head.appendChild(e)},document.head.appendChild(e)}();
+        const container = document.getElementById('canvas-container');
+        const errorLog = document.getElementById('error-log');
+        
+        function showImgError(fileName) {
+            errorLog.style.display = 'block';
+            errorLog.innerHTML += `❌ Ошибка загрузки файла: <b>${fileName}</b><br>Проверьте, что он загружен на GitHub и его имя написано точь-в-точь так же.<br>`;
+        }
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0, 0.01); 
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.rotateSpeed = -0.4; 
+        controls.enableZoom = true;
+        controls.enableDamping = true; 
+
+        const loader = new THREE.TextureLoader();
+        // Ваши файлы из репозитория
+        const order = ['wall2', 'wall4', 'ceiling', 'floor', 'wall1', 'wall3'];
+        
+        const materialArray = order.map(name => {
+            const fileName = name + '.jpeg'; 
+            return new THREE.MeshBasicMaterial({ 
+                map: loader.load(
+                    fileName, 
+                    undefined, 
+                    undefined, 
+                    () => showImgError(fileName)
+                ), 
+                side: THREE.BackSide 
+            });
+        });
+
+        const skybox = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), materialArray);
+        scene.add(skybox);
+
+        function animate() { 
+            requestAnimationFrame(animate);
+            controls.update(); 
+            renderer.render(scene, camera); 
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     </script>
 </body>
 </html>
+
