@@ -2,55 +2,98 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Виртуальный тур 360°</title>
+    <title>Виртуальный тур 360° (3D)</title>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; }
-        #canvas-container { width: 100%; height: 100%; cursor: grab; }
-        .hint { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); color: white; background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 20px; z-index: 10; font-family: sans-serif; pointer-events: none; }
-        #error-log { position: absolute; bottom: 20px; left: 20px; color: #ff4d4d; background: rgba(0,0,0,0.8); padding: 15px; border-radius: 5px; font-family: monospace; max-width: 80%; display: none; z-index: 20; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; font-family: sans-serif; }
+        #view-container { width: 100%; height: 100%; perspective: 600px; display: flex; align-items: center; justify-content: center; cursor: grab; }
+        #cube { width: 1000px; height: 1000px; position: relative; transform-style: preserve-3d; transform: translateZ(300px) rotateX(0deg) rotateY(0deg); }
+        .face { position: absolute; width: 1000px; height: 1000px; background-size: cover; background-position: center; backface-visibility: hidden; }
+        
+        /* Позиционирование стен в пространстве 3D куба */
+        .front  { transform: rotateY(  0deg) translateZ(-500px); background-image: url('Wall1.jpeg'); }
+        .right  { transform: rotateY( -90deg) translateZ(-500px); background-image: url('Wall2.jpeg'); }
+        .back   { transform: rotateY(180deg) translateZ(-500px); background-image: url('Wall3.jpeg'); }
+        .left   { transform: rotateY(  90deg) translateZ(-500px); background-image: url('Wall4.jpeg'); }
+        .top    { transform: rotateX( -90deg) translateZ(-500px); background-image: url('Ceiling.jpeg'); }
+        .bottom { transform: rotateX(  90deg) translateZ(-500px); background-image: url('Floor.jpeg'); }
+
+        .hint { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); color: white; background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 20px; z-index: 10; pointer-events: none; }
     </style>
 </head>
 <body>
-    <div class="hint">Зажмите мышь и вращайте для обзора 360°</div>
-    <div id="error-log"></div>
-    <div id="canvas-container"></div>
+    <div class="hint">Зажмите мышь и вращайте для обзора комнаты 360°</div>
+    <div id="view-container">
+        <div id="cube">
+            <div class="face front"></div>
+            <div class="face right"></div>
+            <div class="face back"></div>
+            <div class="face left"></div>
+            <div class="face top"></div>
+            <div class="face bottom"></div>
+        </div>
+    </div>
 
-    <!-- ПОЛНОСТЬЮ АВТОНОМНЫЙ СКРИПТ: РАБОТАЕТ БЕЗ ИНТЕРНЕТА И CDN -->
     <script>
-        // Загрузчик базового функционала 3D-сцены напрямую
-        const s1 = document.createElement('script');
-        s1.src = 'data:text/javascript;base64,ZXhwb3J0ICogZnJvbSAndGhyZWUnOw==';
+        const container = document.getElementById('view-container');
+        const cube = document.getElementById('cube');
         
-        // Перезаписываем глобальный объект THREE, чтобы код тура его увидел
-        window.THREE = window.THREE || {};
-        
-        // Основной движок виртуального тура
-        function initAutonomousEngine() {
-            const container = document.getElementById('canvas-container');
-            const errorLog = document.getElementById('error-log');
-            
-            function showImgError(fileName) {
-                errorLog.style.display = 'block';
-                errorLog.innerHTML += `❌ Ошибка загрузки файла: <b>${fileName}</b><br>Проверьте, что он загружен на GitHub.<br>`;
-            }
+        let isDragging = false;
+        let startX, startY;
+        let rotateX = 0, rotateY = 0;
 
-            // Создаем встроенные легковесные функции 3D графики
-            window.THREE.Scene = function() { this.add = function(mesh) { this.mesh = mesh; } };
-            window.THREE.PerspectiveCamera = function(fov, aspect, near, far) { this.position = { set: function(x,y,z){} }; this.updateProjectionMatrix = function(){} };
-            window.THREE.WebGLRenderer = function(opts) { 
-                this.domElement = document.createElement('div');
-                this.domElement.style.width = '100%';
-                this.domElement.style.height = '100%';
-                this.domElement.style.background = '#111';
-                this.setSize = function(w,h){};
-                this.render = function(s,c){};
-            };
-            window.THREE.OrbitControls = function(c, e) { this.rotateSpeed = 0; this.enableZoom = true; this.enableDamping = true; this.update = function(){} };
-            window.THREE.TextureLoader = function() { this.load = function(url, s, p, f) { const img = new Image(); img.src = url; img.onerror = f; return { url: url }; } };
-            window.THREE.MeshBasicMaterial = function(opts) { this.side = opts.side; };
-            window.THREE.BoxGeometry = function(x,y,z) {};
-            window.THREE.Mesh = function(g, m) { this.materials = m; };
-            window.THREE.BackSide = 1;
+        container.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            container.style.cursor = 'grabbing';
+            startX = e.clientX;
+            startY = e.clientY;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const deltaX = e.clientX - startX;
+            const deltaY = e.clientY - startY;
+            
+            // Вращение панорамы по осям
+            rotateY += deltaX * 0.2;
+            rotateX -= deltaY * 0.2;
+            
+            // Ограничение обзора вверх/вниз, чтобы не крутилось наизнанку
+            rotateX = Math.max(-85, Math.min(85, rotateX));
+            
+            cube.style.transform = `translateZ(450px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            
+            startX = e.clientX;
+            startY = e.clientY;
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+            container.style.cursor = 'grab';
+        });
+
+        // Поддержка мобильных экранов (тач)
+        container.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const deltaX = e.touches[0].clientX - startX;
+            const deltaY = e.touches[0].clientY - startY;
+            rotateY += deltaX * 0.2;
+            rotateX -= deltaY * 0.2;
+            rotateX = Math.max(-85, Math.min(85, rotateX));
+            cube.style.transform = `translateZ(450px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+
+        window.addEventListener('touchend', () => isDragging = false);
+    </script>
+</body>
+</html>
 
             // Запуск рендеринга
             const scene = new THREE.Scene();
