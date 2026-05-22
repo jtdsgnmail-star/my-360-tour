@@ -15,9 +15,9 @@
     <div id="error-log"></div>
     <div id="canvas-container"></div>
 
-    <!-- НАДЕЖНОЕ ПОДКЛЮЧЕНИЕ БИБЛИОТЕК ПЕРЕД СКРИПТОМ ТУРА -->
-    <script src="https://cloudflare.com"></script>
-    <script src="https://jsdelivr.net"></script>
+    <!-- ПОДКЛЮЧЕНИЕ ЛОКАЛЬНЫХ ФАЙЛОВ ИЗ ВАШЕГО РЕПОЗИТОРИЯ -->
+    <script src="three.min.js"></script>
+    <script src="OrbitControls.js"></script>
 
     <script>
         const container = document.getElementById('canvas-container');
@@ -42,11 +42,9 @@
         controls.enableDamping = true; 
 
         const loader = new THREE.TextureLoader();
-        // Порядок текстур для кубической панорамы Three.js
         const order = ['wall2', 'wall4', 'ceiling', 'floor', 'wall1', 'wall3'];
         
         const materialArray = order.map(name => {
-            // Исправлено расширение на .jpeg согласно вашему репозиторию!
             const fileName = name + '.jpeg'; 
             return new THREE.MeshBasicMaterial({ 
                 map: loader.load(
