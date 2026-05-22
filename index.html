@@ -2,26 +2,27 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Виртуальный тур 360° (Бесшовный)</title>
+    <title>Виртуальный тур 360° (Центрированный)</title>
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; font-family: sans-serif; }
-        #view-container { width: 100%; height: 100%; perspective: 1000px; display: flex; align-items: center; justify-content: center; cursor: grab; }
+        /* perspective: 1450px задает правильный угол обзора из центра вытянутой комнаты */
+        #view-container { width: 100%; height: 100%; perspective: 1450px; display: flex; align-items: center; justify-content: center; cursor: grab; }
         
-        /* Главный контейнер комнаты под ваши точные размеры */
-        #cube { width: 2900px; height: 1000px; position: relative; transform-style: preserve-3d; transform: translateZ(966.5px) rotateX(0deg) rotateY(0deg); }
+        /* translateZ(0px) помещает точку обзора виртуальной камеры строго в центр 3D-коробки */
+        #cube { width: 2900px; height: 1000px; position: relative; transform-style: preserve-3d; transform: translateZ(0px) rotateX(0deg) rotateY(0deg); }
         .face { position: absolute; background-size: 100% 100%; background-position: center; backface-visibility: hidden; }
         
-        /* СТЕНЫ 1 И 3 (Длинные): Длина 2900px, Высота 1000px. Сдвиг на половину ширины торца (1933 / 2 = 966.5px) */
+        /* СТЕНЫ 1 И 3 (Длинные): Длина 2900px, Высота 1000px. Сдвиг наружу на половину ширины торца (1933 / 2 = 966.5px) */
         .front  { width: 2900px; height: 1000px; transform: rotateY(  0deg) translateZ(-966.5px); background-image: url('wall1.jpeg'); }
         .back   { width: 2900px; height: 1000px; transform: rotateY(180deg) translateZ(-966.5px); background-image: url('wall3.jpeg'); }
         
-        /* СТЕНЫ 2 И 4 (Торцевые): Длина 1933px, Высота 1000px. Сдвиг на половину длины комнаты (2900 / 2 = 1450px) */
+        /* СТЕНЫ 2 И 4 (Торцевые): Длина 1933px, Высота 1000px. Сдвиг наружу на половину длины комнаты (2900 / 2 = 1450px) */
         .right  { width: 1933px; height: 1000px; transform: rotateY( -90deg) translateZ(-1450px); background-image: url('wall2.jpeg'); }
         .left   { width: 1933px; height: 1000px; transform: rotateY(  90deg) translateZ(-1450px); background-image: url('wall4.jpeg'); }
         
-        /* ПОТОЛОК И ПОЛ (2900px х 1933px): Идеальная стыковка по всем четырем направлениям без вращения Z */
-        .top    { width: 2900px; height: 1933px; transform: rotateX( -90deg) translateZ(-500px) translateY(0px); background-image: url('ceiling.jpeg'); }
-        .bottom { width: 2900px; height: 1933px; transform: rotateX(  90deg) translateZ(-500px) translateY(0px); background-image: url('floor.jpeg'); }
+        /* ПОТОЛОК И ПОЛ (2900px х 1933px): Ложатся ровно на каркас стен, запечатывая все швы */
+        .top    { width: 2900px; height: 1933px; transform: rotateX( -90deg) translateZ(-500px); background-image: url('ceiling.jpeg'); }
+        .bottom { width: 2900px; height: 1933px; transform: rotateX(  90deg) translateZ(-500px); background-image: url('floor.jpeg'); }
 
         .hint { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); color: white; background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 20px; z-index: 10; pointer-events: none; }
     </style>
@@ -59,12 +60,13 @@
             const deltaX = e.clientX - startX;
             const deltaY = e.clientY - startY;
             
-            // Вращение вокруг центра вытянутой коробки
+            // Вращение камеры строго вокруг центральной точки осей координат
             rotateY += deltaX * 0.15;
             rotateX -= deltaY * 0.15;
             rotateX = Math.max(-75, Math.min(75, rotateX));
             
-            cube.style.transform = `translateZ(966.5px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            // Фиксация камеры в нулевой точке
+            cube.style.transform = `translateZ(0px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
             
             startX = e.clientX;
             startY = e.clientY;
@@ -75,6 +77,7 @@
             container.style.cursor = 'grab';
         });
 
+        // Мобильное управление для телефонов и планшетов
         container.addEventListener('touchstart', (e) => {
             isDragging = true;
             startX = e.touches.clientX;
@@ -90,7 +93,7 @@
             rotateX -= deltaY * 0.15;
             rotateX = Math.max(-75, Math.min(75, rotateX));
             
-            cube.style.transform = `translateZ(966.5px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            cube.style.transform = `translateZ(0px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
             
             startX = e.touches.clientX;
             startY = e.touches.clientY;
@@ -100,3 +103,4 @@
     </script>
 </body>
 </html>
+
