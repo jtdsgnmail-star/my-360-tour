@@ -7,21 +7,21 @@
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; font-family: sans-serif; }
         #view-container { width: 100%; height: 100%; perspective: 1000px; display: flex; align-items: center; justify-content: center; cursor: grab; }
         
-        /* Главный контейнер комнаты. Центрируем камеру через translateZ(966.5px) */
+        /* Главный контейнер комнаты. Центрируем камеру ровно посередине торца (966.5px) */
         #cube { width: 2900px; height: 1000px; position: relative; transform-style: preserve-3d; transform: translateZ(966.5px) rotateX(0deg) rotateY(0deg); }
         .face { position: absolute; background-size: 100% 100%; background-position: center; backface-visibility: hidden; }
         
-        /* ДЛИННЫЕ СТЕНЫ: Смыкаем швы точно по оси Z (-966.5px) */
+        /* ДЛИННЫЕ СТЕНЫ: Ширина 2900, Высота 1000. Отодвигаем вперед и назад на половину ширины торца */
         .front  { width: 2900px; height: 1000px; transform: rotateY(  0deg) translateZ(-966.5px); background-image: url('wall1.jpeg'); }
         .back   { width: 2900px; height: 1000px; transform: rotateY(180deg) translateZ(-966.5px); background-image: url('wall3.jpeg'); }
         
-        /* КОРОТКИЕ ТОРЦЕВЫЕ СТЕНЫ: Смыкаем швы точно по оси X (-1450px) */
+        /* КОРОТКИЕ ТОРЦЕВЫЕ СТЕНЫ: Ширина 1933, Высота 1000. Раздвигаем влево и вправо на половину длины комнаты */
         .left   { width: 1933px; height: 1000px; transform: rotateY(  90deg) translateZ(-1450px); background-image: url('wall4.jpeg'); }
         .right  { width: 1933px; height: 1000px; transform: rotateY( -90deg) translateZ(-1450px); background-image: url('wall2.jpeg'); }
         
-        /* ПОТОЛОК И ПОЛ: Идельно закрывают прямоугольник 2900px на 1933px, швы запечатаны */
-        .top    { width: 2900px; height: 1933px; transform: rotateX( -90deg) translateZ(-500px); background-image: url('ceiling.jpeg'); }
-        .bottom { width: 2900px; height: 1933px; transform: rotateX(  90deg) translateZ(-500px); background-image: url('floor.jpeg'); }
+        /* ПОТОЛОК И ПОЛ: Поворачиваем и поднимаем/опускаем ровно на половину высоты стены (1000 / 2 = 500px) */
+        .top    { width: 2900px; height: 1933px; transform: rotateX(  90deg) translateY(-966.5px) translateZ(-500px); background-image: url('ceiling.jpeg'); }
+        .bottom { width: 2900px; height: 1933px; transform: rotateX( -90deg) translateY( 966.5px) translateZ(-500px); background-image: url('floor.jpeg'); }
 
         .hint { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); color: white; background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 20px; z-index: 10; pointer-events: none; }
     </style>
@@ -59,12 +59,11 @@
             const deltaX = e.clientX - startX;
             const deltaY = e.clientY - startY;
             
-            // Плавное вращение по сторонам
+            // Вращение
             rotateY += deltaX * 0.15;
             rotateX -= deltaY * 0.15;
             rotateX = Math.max(-75, Math.min(75, rotateX));
             
-            // Фиксированное удержание камеры на оси вращения без зазоров
             cube.style.transform = `translateZ(966.5px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
             
             startX = e.clientX;
@@ -76,17 +75,17 @@
             container.style.cursor = 'grab';
         });
 
-        // Полная поддержка для мобильных телефонов и планшетов (Тач-события)
+        // Мобильный тач
         container.addEventListener('touchstart', (e) => {
             isDragging = true;
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
+            startX = e.touches.clientX;
+            startY = e.touches.clientY;
         });
 
         window.addEventListener('touchmove', (e) => {
             if (!isDragging) return;
-            const deltaX = e.touches[0].clientX - startX;
-            const deltaY = e.touches[0].clientY - startY;
+            const deltaX = e.touches.clientX - startX;
+            const deltaY = e.touches.clientY - startY;
             
             rotateY += deltaX * 0.15;
             rotateX -= deltaY * 0.15;
@@ -94,8 +93,8 @@
             
             cube.style.transform = `translateZ(966.5px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
             
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
+            startX = e.touches.clientX;
+            startY = e.touches.clientY;
         });
 
         window.addEventListener('touchend', () => isDragging = false);
